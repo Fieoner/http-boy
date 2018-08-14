@@ -12,7 +12,6 @@ pyboy = emulator.init_emulator()
 
 class GBHTTPRequestHandler(BaseHTTPRequestHandler):
 
-
     def do_GET(self):
         parsed_url = urlparse(self.path)
         query = parse_qs(parsed_url.query)
@@ -25,7 +24,23 @@ class GBHTTPRequestHandler(BaseHTTPRequestHandler):
                 self.send_response(200)
                 self.send_header('Content-type', 'text-json')
                 self.end_headers()
-                self.wfile.write('ok')
+                ss_image = getScreenshot(pyboy)
+                buf = cStringIO.StringIO()
+                ss_image.save(buf, format="PNG")
+                ss_image.save('test.png')
+                base64string = base64.b64encode(buf.getvalue())
+
+                data = {}
+                data['result'] = {
+                    "type": 'simple',
+                    "screenshot": base64string
+                }
+
+                data['options'] = {
+                    "type": 'controller'
+                }
+                json_data = json.dumps(data, separators=(',',':'))
+                self.wfile.write(json_data)
                 return
 
             if path == '/execute':
@@ -34,46 +49,14 @@ class GBHTTPRequestHandler(BaseHTTPRequestHandler):
                     return
                 emulator.presskey(pyboy, key)
 
-                screenshot = pyboy.window.getScreenBuffer()
-
                 self.send_response(200)
                 self.send_header('Content-type', 'text-json')
                 self.end_headers()
 
-                n_1 = len(screenshot[0])
-                n_2 = len(screenshot)
-
-                print("n_1")
-                print(n_1)
-                print("n_2")
-                print(n_2)
-
-                to_string_pixels = list(map(lambda x: list(map(lambda y: str(y), x)), screenshot))
-                to_string_rows = list(map(lambda x: ','.join(x), to_string_pixels))
-                to_string_all = '&'.join(to_string_rows)
-
-                # for line in screenshot:
-                #     line = ",".join(str(line))
-                # screenshot = "&".join(str(screenshot))
-                # for line in to_string:
-                #    self.wfile.write(line)
-                #    self.wfile.write("\n")
-                im = Image.new('RGBA', (288, 320))
-                pixellist = []
-                for line in screenshot:
-                    for pixel in line:
-                        pixelstring = str(hex(pixel))
-                        if len(pixelstring) < 8:
-                            pixelstring = "0x" + ('0'*(8-len(pixelstring))) + pixelstring[2:]
-                        r = int(pixelstring[2:4], 16)
-                        g = int(pixelstring[4:6], 16)
-                        b = int(pixelstring[6:8], 16)
-                        pixellist.append((r, g, b))
-                im.putdata(pixellist)
-                transposed = im.transpose(Image.TRANSPOSE)
+                ss_image = getScreenshot(pyboy)
                 buf = cStringIO.StringIO()
-                transposed.save(buf, format="PNG")
-                transposed.save('test.png')
+                ss_image.save(buf, format="PNG")
+                ss_image.save('test.png')
                 base64string = base64.b64encode(buf.getvalue())
 
                 data = {}
@@ -102,6 +85,24 @@ def main():
     print('server running...')
     httpd.serve_forever()
 
+
+
+def getScreenshot(pyboy):
+    screenshot = pyboy.window.getScreenBuffer()
+    im = Image.new('RGBA', (288, 320))
+    pixellist = []
+    for line in screenshot:
+        for pixel in line:
+            pixelstring = str(hex(pixel))
+            if len(pixelstring) < 8:
+                pixelstring = "0x" + ('0'*(8-len(pixelstring))) + pixelstring[2:]
+            r = int(pixelstring[2:4], 16)
+            g = int(pixelstring[4:6], 16)
+            b = int(pixelstring[6:8], 16)
+            pixellist.append((r, g, b))
+    im.putdata(pixellist)
+    transposed = im.transpose(Image.TRANSPOSE)
+    return transposed
 
 
 
