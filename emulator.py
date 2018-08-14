@@ -54,7 +54,21 @@ def gamestart(pyboy):
     pyboy.sendInput([WindowEvent.PressButtonA])
     pyboy.tick()
     pyboy.sendInput([WindowEvent.ReleaseButtonA])
-    ticks(pyboy, 1000)
+    ticks(pyboy, 200)
+
+def presskey(pyboy, key):
+    keys = {"up":[[WindowEvent.PressArrowUp],[WindowEvent.ReleaseArrowUp]],
+    "down":[[WindowEvent.PressArrowDown],[WindowEvent.ReleaseArrowDown]],
+    "left":[[WindowEvent.PressArrowLeft],[WindowEvent.ReleaseArrowLeft]],
+    "right":[[WindowEvent.PressArrowRight],[WindowEvent.ReleaseArrowRight]],
+    "a":[[WindowEvent.PressButtonA],[WindowEvent.ReleaseButtonA]],
+    "b":[[WindowEvent.PressButtonB],[WindowEvent.ReleaseButtonB]],
+    "start":[[WindowEvent.PressButtonStart],[WindowEvent.ReleaseButtonStart]],
+    "select":[[WindowEvent.PressButtonSelect],[WindowEvent.ReleaseButtonSelect]]}
+    pyboy.sendInput(keys[key][0])
+    pyboy.tick()
+    pyboy.sendInput(keys[key][1])
+    ticks(pyboy, 100)
 
 # def main():
 #     bootROM = None
