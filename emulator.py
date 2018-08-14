@@ -54,7 +54,7 @@ def gamestart(pyboy):
     pyboy.sendInput([WindowEvent.PressButtonA])
     pyboy.tick()
     pyboy.sendInput([WindowEvent.ReleaseButtonA])
-    ticks(pyboy, 100)
+    ticks(pyboy, 250)
 
 def presskey(pyboy, key):
     keys = {"up":[[WindowEvent.PressArrowUp],[WindowEvent.ReleaseArrowUp]],
@@ -68,7 +68,7 @@ def presskey(pyboy, key):
     pyboy.sendInput(keys[key][0])
     pyboy.tick()
     pyboy.sendInput(keys[key][1])
-    ticks(pyboy, 100)
+    ticks(pyboy, 200)
 
 # def main():
 #     bootROM = None
