@@ -4,6 +4,9 @@ import emulator
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import json
 from urlparse import urlparse, parse_qs
+from PIL import Image
+import base64
+import cStringIO
 
 pyboy = emulator.init_emulator()
 
@@ -49,24 +52,42 @@ class GBHTTPRequestHandler(BaseHTTPRequestHandler):
                 to_string_rows = list(map(lambda x: ','.join(x), to_string_pixels))
                 to_string_all = '&'.join(to_string_rows)
 
-                data = {}
-                data['result'] = {
-                    "type": 'simple',
-                    "screenshot": to_string_all
-                }
-
-                data['options'] = {
-                    "type": 'controller'
-                }
-                json_data = json.dumps(data, separators=(',',':'))
-
                 # for line in screenshot:
                 #     line = ",".join(str(line))
                 # screenshot = "&".join(str(screenshot))
                 # for line in to_string:
                 #    self.wfile.write(line)
                 #    self.wfile.write("\n")
+                im = Image.new('RGBA', (288, 320))
+                pixellist = []
+                for line in screenshot:
+                    for pixel in line:
+                        pixelstring = str(hex(pixel))
+                        if len(pixelstring) < 8:
+                            pixelstring = "0x" + ('0'*(8-len(pixelstring))) + pixelstring[2:]
+                        r = int(pixelstring[2:4], 16)
+                        g = int(pixelstring[4:6], 16)
+                        b = int(pixelstring[6:8], 16)
+                        pixellist.append((r, g, b))
+                im.putdata(pixellist)
+                transposed = im.transpose(Image.TRANSPOSE)
+                buf = cStringIO.StringIO()
+                transposed.save(buf, format="PNG")
+                transposed.save('test.png')
+                base64string = base64.b64encode(buf.getvalue())
+
+                data = {}
+                data['result'] = {
+                    "type": 'simple',
+                    "screenshot": base64string
+                }
+
+                data['options'] = {
+                    "type": 'controller'
+                }
+                json_data = json.dumps(data, separators=(',',':'))
                 self.wfile.write(json_data)
+
 
         except IOError:
             self.send_error(404, 'not actually 404 but haha')
