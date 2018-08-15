@@ -4,6 +4,7 @@ import sys
 sys.path.append('PyBoy/Source')
 import os
 import traceback
+import glob
 from PyBoy.WindowEvent import WindowEvent
 from PyBoy import PyBoy
 from PyBoy.GameWindow import SdlGameWindow as Window
@@ -56,6 +57,46 @@ def gamestart(pyboy):
     pyboy.sendInput([WindowEvent.ReleaseButtonA])
     ticks(pyboy, 250)
 
+def savegame(pyboy):
+    list_of_files = glob.glob("STATES/*.state")
+    list_of_files.sort()
+    cartridge = pyboy.mb.cartridge.filename.split('/')[-1:][0]
+    counter = "00000"
+    savefile = cartridge + counter + ".state"
+    for file in list_of_files:
+        actualname = file.split('/')[-1:][0]
+        if savefile == actualname:
+            intcounter = int(counter)
+            intcounter += 1
+            counter = str(intcounter)
+            if len(counter) < 5:
+                counter = "0"*(5-len(counter)) + counter
+            savefile = cartridge + counter + ".state"
+    pyboy.mb.saveState("STATES/"+savefile)
+
+def resumegame(pyboy):
+    list_of_files = glob.glob("STATES/*.state")
+    list_of_files.sort()
+    cartridge = pyboy.mb.cartridge.filename.split('/')[-1:][0]
+    counter = "00000"
+    savefile = cartridge + counter + ".state"
+    for file in list_of_files:
+        actualname = file.split('/')[-1:][0]
+        if savefile == actualname:
+            intcounter = int(counter)
+            intcounter += 1
+            counter = str(intcounter)
+            if len(counter) < 5:
+                counter = "0"*(5-len(counter)) + counter
+            savefile = cartridge + counter + ".state"
+    counter = str(int(counter)-1)
+    counter = "0"*(5-len(counter)) + counter
+    savefile = cartridge + counter + ".state"
+    print(savefile)
+    pyboy.mb.loadState("STATES/"+savefile)
+
+
+
 def presskey(pyboy, key):
     keys = {"up":[[WindowEvent.PressArrowUp],[WindowEvent.ReleaseArrowUp]],
     "down":[[WindowEvent.PressArrowDown],[WindowEvent.ReleaseArrowDown]],
@@ -69,6 +110,7 @@ def presskey(pyboy, key):
     pyboy.tick()
     pyboy.sendInput(keys[key][1])
     ticks(pyboy, 200)
+    savegame(pyboy)
 
 # def main():
 #     bootROM = None

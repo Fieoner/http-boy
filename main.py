@@ -19,6 +19,29 @@ class GBHTTPRequestHandler(BaseHTTPRequestHandler):
         print(query)
         keys = ["up", "down", "left", "right", "b", "a", "start", "select"]
         try:
+            if path == '/resume':
+                emulator.resumegame(pyboy)
+                self.send_response(200)
+                self.send_header('Content-type', 'text-json')
+                self.end_headers()
+                ss_image = getScreenshot(pyboy)
+                buf = cStringIO.StringIO()
+                ss_image.save(buf, format="PNG")
+                ss_image.save('test.png')
+                base64string = base64.b64encode(buf.getvalue())
+
+                data = {}
+                data['result'] = {
+                    "type": 'simple',
+                    "screenshot": base64string
+                }
+
+                data['options'] = {
+                    "type": 'controller'
+                }
+                json_data = json.dumps(data, separators=(',',':'))
+                self.wfile.write(json_data)
+                return
             if path == '/start':
                 emulator.gamestart(pyboy)
                 self.send_response(200)
