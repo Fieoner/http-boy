@@ -27,7 +27,6 @@ def getROM(ROMdir):
 def ticks(pyboy, n):
     for i in range(0, n):
         pyboy.tick()
-        print("helooooooo.." + str(i))
 
 def init_emulator():
     bootROM = None
@@ -107,7 +106,7 @@ def presskey(pyboy, key):
     "start":[[WindowEvent.PressButtonStart],[WindowEvent.ReleaseButtonStart]],
     "select":[[WindowEvent.PressButtonSelect],[WindowEvent.ReleaseButtonSelect]]}
     pyboy.sendInput(keys[key][0])
-    pyboy.tick()
+    ticks(pyboy, 10)
     pyboy.sendInput(keys[key][1])
     ticks(pyboy, 200)
     savegame(pyboy)

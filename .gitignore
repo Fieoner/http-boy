@@ -2,3 +2,4 @@ PyBoy
 ROM/*.gb
 __pycache__/
 .vscode
+STATES/*0*
