@@ -6,7 +6,7 @@ Server that exposes an interface to a Game Boy emulator
 
 1. Clone this repo
 2. `cd` into the repo directory
-3. Clone [PyBoy](https://github.com/Fieoner/PyBoy)
+3. Clone [PyBoy](https://github.com/Baekalfen/PyBoy)
 4. Create the virtual environment (read below)
 
 # Virtual environment setup
@@ -47,7 +47,7 @@ You can also specify the ROM directly as a command line argument.
 
 # Interface
 
-The server is exposed in localhost by default, in port `3838`. You can send the following HTTP requests to the server:
+The server is exposed in localhost by default, in port `8123`. You can send the following HTTP requests to the server:
 
 ## start()
 
