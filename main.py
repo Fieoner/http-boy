@@ -9,6 +9,8 @@ import base64
 import cStringIO
 
 pyboy = emulator.init_emulator()
+def htmlguarro(texto):
+    return "<title>test</title><h3>"+texto+"</h3>"
 
 class GBHTTPRequestHandler(BaseHTTPRequestHandler):
 
@@ -94,6 +96,22 @@ class GBHTTPRequestHandler(BaseHTTPRequestHandler):
                 json_data = json.dumps(data, separators=(',',':'))
                 self.wfile.write(json_data)
 
+            if path == '/read':
+                try:
+                    print("query: "+query["addr"][0])
+                    address = int(query["addr"][0], 16)
+                except:
+                    print("it broke")
+                    address = 0x0000
+                value = pyboy.getMemoryValue(address)
+                cleantext = '0x'+hex(address).upper()[2:]+": "+'0x'+hex(value).upper()[2:]
+                print(cleantext)
+
+                self.send_response(200)
+                self.send_header('Content-type', 'text-html')
+                self.end_headers()
+
+                self.wfile.write(htmlguarro(cleantext))
 
         except IOError:
             self.send_error(404, 'not actually 404 but haha')
