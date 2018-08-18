@@ -47,9 +47,12 @@ def init_emulator():
         traceback.print_exc()
 
 def gamestart(pyboy):
+    print("> Game starting...")
+    cartridge = pyboy.mb.cartridge.filename.split('/')[-1:][0]
+    print("> Loading {0}".format(cartridge))
     # ticks(pyboy, 100)
     # pyboy.mb.buttonEvent([WindowEvent.LoadState])
-    pyboy.mb.loadState('STATES/pokeb.gb.state')
+    pyboy.mb.loadState("STATES/{0}.gb.state".format(cartridge))
     pyboy.tick()
     pyboy.sendInput([WindowEvent.PressButtonA])
     pyboy.tick()
@@ -79,6 +82,8 @@ def resumegame(pyboy):
     cartridge = pyboy.mb.cartridge.filename.split('/')[-1:][0]
     counter = "00000"
     savefile = cartridge + counter + ".state"
+    if savefile not in list_of_files:
+        return gamestart(pyboy)
     for file in list_of_files:
         actualname = file.split('/')[-1:][0]
         if savefile == actualname:
@@ -136,6 +141,3 @@ def presskey(pyboy, key):
 #         print ("Interrupted by keyboard")
 #     except Exception as ex:
 #         traceback.print_exc()
-
-if __name__ == '__main__':
-    main()
