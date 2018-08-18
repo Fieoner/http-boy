@@ -3,3 +3,11 @@ ROM/*.gb
 __pycache__/
 .vscode
 STATES/*0*
+
+# virtualenv
+bin
+include
+lib-python
+lib_pypy
+share
+site-packages
