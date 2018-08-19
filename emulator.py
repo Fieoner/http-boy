@@ -78,9 +78,9 @@ def savegame(pyboy):
 
 def resumegame(pyboy):
     list_of_files = glob.glob("STATES/*.state")
-    list_of_files.sort()
     list_of_filenames = map(lambda fullpath: fullpath.split('/')[-1:][0],
                             list_of_files)
+    list_of_filenames.sort()
     cartridge = pyboy.mb.cartridge.filename.split('/')[-1:][0]
     counter = "00000"
     savefile = cartridge + counter + ".state"
