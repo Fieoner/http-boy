@@ -1,0 +1,3 @@
+[submodule "PyBoy"]
+	path = PyBoy
+	url = https://github.com/Baekalfen/PyBoy
