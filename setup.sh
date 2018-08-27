@@ -14,5 +14,4 @@ source ./bin/activate
 
 pip install git+https://bitbucket.org/pypy/numpy.git
 pip install git+https://github.com/marcusva/py-sdl2.git
-
-
+pip install imageio
