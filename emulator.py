@@ -52,7 +52,7 @@ def gamestart(pyboy):
     print("> Loading {0}".format(cartridge))
     # ticks(pyboy, 100)
     # pyboy.mb.buttonEvent([WindowEvent.LoadState])
-    pyboy.mb.loadState("STATES/{0}.gb.state".format(cartridge))
+    pyboy.mb.loadState("STATES/{0}.state".format(cartridge))
     pyboy.tick()
     pyboy.sendInput([WindowEvent.PressButtonA])
     pyboy.tick()

@@ -7,6 +7,7 @@ from urlparse import urlparse, parse_qs
 from PIL import Image
 import base64
 import cStringIO
+import traceback
 
 pyboy = emulator.init_emulator()
 def htmlguarro(texto):
@@ -90,8 +91,10 @@ class GBHTTPRequestHandler(BaseHTTPRequestHandler):
 
                 self.wfile.write(htmlguarro(cleantext))
 
-        except IOError:
+        except Exception as e:
             self.send_error(404, 'not actually 404 but haha')
+            print (e)
+            traceback.print_exc()
 
 def main():
     print('starting...')
