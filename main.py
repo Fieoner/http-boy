@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 
-import emulator
+from emulator import Emulator
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import json
 from urlparse import urlparse, parse_qs
-from PIL import Image
 import base64
 import cStringIO
 import traceback
 
-pyboy = emulator.init_emulator()
+
+emulator = Emulator()
+
 def htmlguarro(texto):
     return "<title>test</title><h3>"+texto+"</h3>"
 
@@ -23,11 +24,11 @@ class GBHTTPRequestHandler(BaseHTTPRequestHandler):
         keys = ["up", "down", "left", "right", "b", "a", "start", "select"]
         try:
             if path == '/resume' or path == '/start':
-                emulator.resumegame(pyboy)
+                emulator.resumegame()
                 self.send_response(200)
                 self.send_header('Content-type', 'text-json')
                 self.end_headers()
-                ss_image = getScreenshot(pyboy)
+                ss_image = emulator.getScreenshot()
                 buf = cStringIO.StringIO()
                 ss_image.save(buf, format="PNG")
                 ss_image.save('test.png')
@@ -50,13 +51,13 @@ class GBHTTPRequestHandler(BaseHTTPRequestHandler):
                 key = query["key"][0]
                 if key not in keys:
                     return
-                emulator.presskey(pyboy, key)
+                emulator.presskey(key)
 
                 self.send_response(200)
                 self.send_header('Content-type', 'text-json')
                 self.end_headers()
 
-                ss_image = getScreenshot(pyboy)
+                ss_image = emulator.getScreenshot()
                 buf = cStringIO.StringIO()
                 ss_image.save(buf, format="PNG")
                 ss_image.save('test.png')
@@ -81,7 +82,7 @@ class GBHTTPRequestHandler(BaseHTTPRequestHandler):
                 except:
                     print("it broke")
                     address = 0x0000
-                value = pyboy.getMemoryValue(address)
+                value = emulator.read(address)
                 cleantext = '0x'+hex(address).upper()[2:]+": "+'0x'+hex(value).upper()[2:]
                 print(cleantext)
 
@@ -105,27 +106,6 @@ def main():
     httpd = HTTPServer(server_address, GBHTTPRequestHandler)
     print('server running...')
     httpd.serve_forever()
-
-
-
-def getScreenshot(pyboy):
-    screenshot = pyboy.window.getScreenBuffer()
-    im = Image.new('RGBA', (288, 320))
-    pixellist = []
-    for line in screenshot:
-        for pixel in line:
-            pixelstring = str(hex(pixel))
-            if len(pixelstring) < 8:
-                pixelstring = "0x" + ('0'*(8-len(pixelstring))) + pixelstring[2:]
-            r = int(pixelstring[2:4], 16)
-            g = int(pixelstring[4:6], 16)
-            b = int(pixelstring[6:8], 16)
-            pixellist.append((r, g, b))
-    im.putdata(pixellist)
-    transposed = im.transpose(Image.TRANSPOSE)
-    return transposed
-
-
 
 
 if __name__ == '__main__':
